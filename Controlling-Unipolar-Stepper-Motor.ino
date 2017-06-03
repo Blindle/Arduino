@@ -21,7 +21,7 @@ void loop() {
   digitalWrite(dirPin, right);
   digitalWrite(latchPin, LOW);
   
-  shiftOut(dataPin, clockPin, MSBFIRST, 3);  
+  shiftOut(dataPin, clockPin, MSBFIRST, 0b11111000);  
   
   digitalWrite(latchPin, HIGH);
   digitalWrite(latchPin, LOW);
