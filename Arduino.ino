@@ -18,7 +18,7 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(DIRECTION_PIN, RIGHT_DIRECTION); // Set direction of the 
+  digitalWrite(DIRECTION_PIN, RIGHT_DIRECTION); // Set direction of the stepper motors
   int arrayLenght = sizeof(letters)/sizeof(letters[0]);
   for(int i=0; i< arrayLenght; i++){
       representLetter(letters[i], 3);
@@ -70,7 +70,3 @@ int getCodeOfLetter(char letter) {
     default: return 0;
   }
 }
-
-
-
-
