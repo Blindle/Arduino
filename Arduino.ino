@@ -7,7 +7,7 @@ const int RIGHT_DIRECTION = HIGH;
 const int LEFT_DIRECTION = LOW;
 
 const int DELAY_BETWEEN_LETTERS = 1000;
-const char letters[5] = {'A', 'E', 'S', 'Z', 'Y'};
+const char letters[5] = {'E', 'A', 'S', 'Z', 'Y'};
 
 // ARDUINO_LIFE_CYCLES
 void setup() {
@@ -15,15 +15,16 @@ void setup() {
   pinMode(CLOCK_PIN, OUTPUT);
   pinMode(DATA_PIN, OUTPUT);
   pinMode(DIRECTION_PIN, OUTPUT);
+  Serial.begin(9600);
 }
 
 void loop() {
   digitalWrite(DIRECTION_PIN, RIGHT_DIRECTION); // Set direction of the stepper motors
-  int arrayLenght = sizeof(letters)/sizeof(letters[0]);
-  for(int i=0; i< arrayLenght; i++){
-      representLetter(letters[i], 3);
+  if (Serial.available()) { //Si está disponible
+      char c = Serial.read(); //Guardamos la lectura en una variable char
+      representLetter(c, 3);
       delay(DELAY_BETWEEN_LETTERS);
-  }
+   }
 } 
 
 void representLetter(char letter, int numberOfLoops) {
