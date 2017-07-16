@@ -6,8 +6,10 @@ const int DIRECTION_PIN = 4; ////Pin that control the direction
 const int RIGHT_DIRECTION = HIGH;
 const int LEFT_DIRECTION = LOW;
 
-const int DELAY_BETWEEN_LETTERS = 1000;
-const char letters[5] = {'E', 'A', 'S', 'Z', 'Y'};
+const int DELAY_BETWEEN_LETTERS = 2000;
+const char letters[5] = {'A', 'A', 'A', 'A', 'A'};
+const int NUMBER_OF_STEPS_PER_LOOP = 20;
+const char EMPTY_CHARACTER = '@';
 
 // ARDUINO_LIFE_CYCLES
 void setup() {
@@ -18,56 +20,182 @@ void setup() {
   Serial.begin(9600);
 }
 
-void loop() {
-  digitalWrite(DIRECTION_PIN, RIGHT_DIRECTION); // Set direction of the stepper motors
-  if (Serial.available()) { //Si está disponible
-      char c = Serial.read(); //Guardamos la lectura en una variable char
-      representLetter(c, 3);
-      delay(DELAY_BETWEEN_LETTERS);
-   }
-} 
+char lastCharacter = EMPTY_CHARACTER;
 
-void representLetter(char letter, int numberOfLoops) {
-  for(int i=0; i < numberOfLoops * 20; i++){
+void loop() {
+  for(int i=0; i < 5; i++){
+    if(lastCharacter != EMPTY_CHARACTER) {
+      representLetter(lastCharacter, LEFT_DIRECTION);  
+    }
+    
+    representLetter('A', RIGHT_DIRECTION);
+    delay(DELAY_BETWEEN_LETTERS);  
+  }
+}
+
+void representLetter(char letter, int dir) {
+  digitalWrite(DIRECTION_PIN, dir);
+  
+  lastCharacter = letter;
+  int * stepsPerMotor = getStepsPerMotor(letter);
+  int spinningMotor =  0b11111111;
+  for(int i=0; i < NUMBER_OF_STEPS_PER_LOOP; i++){
     digitalWrite(LATCH_PIN, LOW);
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, getCodeOfLetter(letter));
+    
+    if (stepsPerMotor[0] == i) {
+      spinningMotor = spinningMotor & 0b01111111;
+    }
+    if (stepsPerMotor[1] == i) {
+      spinningMotor = spinningMotor & 0b10111111;
+    }
+    
+    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, spinningMotor);
     digitalWrite(LATCH_PIN, HIGH);
 
     digitalWrite(LATCH_PIN, LOW);
     shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 0);
     digitalWrite(LATCH_PIN, HIGH);
-    delay(10);   
+    delay(10);
   }
 }
 
-int getCodeOfLetter(char letter) {
+int stepsPerMotor[2];
+int * getStepsPerMotor(char letter) {
   switch(letter) {
-    case 'A': return 0b10000000;
-    case 'B': return 0b11000000;
-    case 'C': return 0b10010000;
-    case 'D': return 0b10011000;
-    case 'E': return 0b10001000;
-    case 'F': return 0b11010000;
-    case 'G': return 0b11011000;
-    case 'H': return 0b11001000;
-    case 'I': return 0b01001000;
-    case 'J': return 0b01011000;
-    case 'K': return 0b10100000;
-    case 'L': return 0b11100000;
-    case 'M': return 0b10110000;
-    case 'N': return 0b10111000;
-    case 'O': return 0b10101000;
-    case 'P': return 0b11110000;
-    case 'Q': return 0b11111000;
-    case 'R': return 0b11101000;
-    case 'S': return 0b01110000;
-    case 'T': return 0b01111000;
-    case 'U': return 0b10100100;
-    case 'V': return 0b11100100;
-    case 'W': return 0b01011100;
-    case 'X': return 0b10110100;
-    case 'Y': return 0b10111100;
-    case 'Z': return 0b10101100;
-    default: return 0;
+    case 'A': {
+      stepsPerMotor[0] = 6;
+      stepsPerMotor[1] = 0;
+      break;
+    }
+    case 'B': {
+      stepsPerMotor[0] = 10;
+      stepsPerMotor[1] = 0;
+      break;
+    }
+    case 'C': {
+      stepsPerMotor[0] = 6;
+      stepsPerMotor[1] = 12;
+      break;
+    }
+    case 'D': {
+      stepsPerMotor[0] = 6;
+      stepsPerMotor[1] = 16;
+      break;
+    }
+    case 'E': {
+      stepsPerMotor[0] = 6;
+      stepsPerMotor[1] = 8;
+      break;
+    }
+    case 'F': {
+      stepsPerMotor[0] = 10;
+      stepsPerMotor[1] = 12;
+      break;
+    }
+    case 'G': {
+      stepsPerMotor[0] = 10;
+      stepsPerMotor[1] = 16;
+      break;
+    }
+    case 'H': {
+      stepsPerMotor[0] = 10;
+      stepsPerMotor[1] = 8;
+      break;
+    }
+    case 'I': {
+      stepsPerMotor[0] = 8;
+      stepsPerMotor[1] = 12;
+      break;
+    }
+    case 'J': {
+      stepsPerMotor[0] = 8;
+      stepsPerMotor[1] = 16;
+      break;
+    }
+    case 'K': {
+      stepsPerMotor[0] = 14;
+      stepsPerMotor[1] = 0;
+      break;
+    }
+    case 'L': {
+      stepsPerMotor[0] = 18;
+      stepsPerMotor[1] = 0;
+      break;
+    }
+    case 'M': {
+      stepsPerMotor[0] = 14;
+      stepsPerMotor[1] = 12;
+      break;
+    }
+    case 'N': {
+      stepsPerMotor[0] = 18;
+      stepsPerMotor[1] = 16;
+      break;
+    }
+    case 'O': {
+      stepsPerMotor[0] = 14;
+      stepsPerMotor[1] = 8;
+      break;
+    }
+    case 'P': {
+      stepsPerMotor[0] = 18;
+      stepsPerMotor[1] = 12;
+      break;
+    }
+    case 'Q': {
+      stepsPerMotor[0] = 18;
+      stepsPerMotor[1] = 16;
+      break;
+    }
+    case 'R': {
+      stepsPerMotor[0] = 18;
+      stepsPerMotor[1] = 8;
+      break;
+    }
+    case 'S': {
+      stepsPerMotor[0] = 16;
+      stepsPerMotor[1] = 12;
+      break;
+    }
+    case 'T': {
+      stepsPerMotor[0] = 16;
+      stepsPerMotor[1] = 16;
+      break;
+    }
+    case 'U': {
+      stepsPerMotor[0] = 14;
+      stepsPerMotor[1] = 6;
+      break;
+    }
+    case 'V': {
+      stepsPerMotor[0] = 18;
+      stepsPerMotor[1] = 6;
+      break;
+    }
+    case 'W': {
+      stepsPerMotor[0] = 8;
+      stepsPerMotor[1] = 18;
+      break;
+    }
+    case 'X': {
+      stepsPerMotor[0] = 14;
+      stepsPerMotor[1] = 14;
+      break;
+    }
+    case 'Y': {
+      stepsPerMotor[0] = 14;
+      stepsPerMotor[1] = 18;
+      break;
+    }
+    case 'Z': {
+      stepsPerMotor[0] = 14;
+      stepsPerMotor[1] = 10;
+      break;
+    }
+    default: {
+      stepsPerMotor[0] = 0;
+      stepsPerMotor[1] = 0;
+    }
   }
+  return stepsPerMotor;
 }
