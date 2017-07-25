@@ -8,7 +8,7 @@ const int DIRECTION_PIN = 4; ////Pin that control the direction
 
 // DELAYS
 const int DELAY_BETWEEN_WORDS = 2000;
-const int DELAY_BETWEEN_MOTOR_STEPS = 10;
+const int DELAY_BETWEEN_MOTOR_STEPS = 100;
 
 // MOTOR_DIRECTIONS
 const int RIGHT_DIRECTION = HIGH;
@@ -19,7 +19,7 @@ const int NUMBER_OF_STEPS_PER_LOOP = 20;
 
 const char EMPTY_CHARACTER = '@';
 char lastWord[4] = {EMPTY_CHARACTER, EMPTY_CHARACTER, EMPTY_CHARACTER, EMPTY_CHARACTER};
-char *words[4] = {"A", "AB", "ABC", "ABCD"};
+char *words[4] = {"AAAA", "AAAA", "AAAA", "AAAA"};
 
 // ARDUINO_LIFE_CYCLES
 void setup()
@@ -66,7 +66,7 @@ void representWord(char *word)
 
 void representLetter(int letterPosition, char letter)
 {
-  if (lastWord[letterPosition] == EMPTY_CHARACTER)
+  if (lastWord[letterPosition] != EMPTY_CHARACTER)
   {
     spinMotor(letterPosition, lastWord[letterPosition], LEFT_DIRECTION);
   }
