@@ -1,16 +1,17 @@
-const int LATCH_PIN = 8; //Pin connected to ST_CP of 74HC595
+const int LATCH_PIN = 8;  //Pin connected to ST_CP of 74HC595
 const int CLOCK_PIN = 12; //Pin connected to SH_CP of 74HC595
-const int DATA_PIN = 11; ////Pin connected to DS of 74HC595
+const int DATA_PIN = 11;  ////Pin connected to DS of 74HC595
 
 const int DIRECTION_PIN = 4; ////Pin that control the direction
 const int RIGHT_DIRECTION = HIGH;
 const int LEFT_DIRECTION = LOW;
 
 const int DELAY_BETWEEN_LETTERS = 1000;
-const char letters[5] = {'E', 'A', 'S', 'Z', 'Y'};
+const byte BLINK_ALL_LED = 0b11111111;
 
 // ARDUINO_LIFE_CYCLES
-void setup() {
+void setup()
+{
   pinMode(LATCH_PIN, OUTPUT);
   pinMode(CLOCK_PIN, OUTPUT);
   pinMode(DATA_PIN, OUTPUT);
@@ -18,56 +19,72 @@ void setup() {
   Serial.begin(9600);
 }
 
-void loop() {
-  digitalWrite(DIRECTION_PIN, RIGHT_DIRECTION); // Set direction of the stepper motors
-  if (Serial.available()) { //Si está disponible
-      char c = Serial.read(); //Guardamos la lectura en una variable char
-      representLetter(c, 3);
-      delay(DELAY_BETWEEN_LETTERS);
-   }
-} 
-
-void representLetter(char letter, int numberOfLoops) {
-  for(int i=0; i < numberOfLoops * 20; i++){
-    digitalWrite(LATCH_PIN, LOW);
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, getCodeOfLetter(letter));
-    digitalWrite(LATCH_PIN, HIGH);
-
-    digitalWrite(LATCH_PIN, LOW);
-    shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 0);
-    digitalWrite(LATCH_PIN, HIGH);
-    delay(10);   
+void loop()
+{
+  digitalWrite(DIRECTION_PIN, RIGHT_DIRECTION);
+  for (int j = 0; j < 20; j++)
+  {
+    sendDataToMultiplexors(BLINK_ALL_LED, BLINK_ALL_LED, 10);
+    sendDataToMultiplexors(0, 0, 10);
   }
+  delay(DELAY_BETWEEN_LETTERS);
 }
 
-int getCodeOfLetter(char letter) {
-  switch(letter) {
-    case 'A': return 0b10000000;
-    case 'B': return 0b11000000;
-    case 'C': return 0b10010000;
-    case 'D': return 0b10011000;
-    case 'E': return 0b10001000;
-    case 'F': return 0b11010000;
-    case 'G': return 0b11011000;
-    case 'H': return 0b11001000;
-    case 'I': return 0b01001000;
-    case 'J': return 0b01011000;
-    case 'K': return 0b10100000;
-    case 'L': return 0b11100000;
-    case 'M': return 0b10110000;
-    case 'N': return 0b10111000;
-    case 'O': return 0b10101000;
-    case 'P': return 0b11110000;
-    case 'Q': return 0b11111000;
-    case 'R': return 0b11101000;
-    case 'S': return 0b01110000;
-    case 'T': return 0b01111000;
-    case 'U': return 0b10100100;
-    case 'V': return 0b11100100;
-    case 'W': return 0b01011100;
-    case 'X': return 0b10110100;
-    case 'Y': return 0b10111100;
-    case 'Z': return 0b10101100;
-    default: return 0;
+void sendDataToMultiplexors(byte first, byte second, int delayTime){
+    digitalWrite(LATCH_PIN, 0);
+    shiftOut(DATA_PIN, CLOCK_PIN, first);
+    shiftOut(DATA_PIN, CLOCK_PIN, second);
+    digitalWrite(LATCH_PIN, 1);
+    delay(delayTime);
+}
+
+// the heart of the program
+void shiftOut(int myDataPin, int myClockPin, byte myDataOut)
+{
+  // This shifts 8 bits out MSB first,
+  //on the rising edge of the clock,
+  //clock idles low
+
+  //internal function setup
+  int i = 0;
+  int pinState;
+  pinMode(myClockPin, OUTPUT);
+  pinMode(myDataPin, OUTPUT);
+
+  //clear everything out just in case to
+  //prepare shift register for bit shifting
+  digitalWrite(myDataPin, 0);
+  digitalWrite(myClockPin, 0);
+
+  //for each bit in the byte myDataOut�
+  //NOTICE THAT WE ARE COUNTING DOWN in our for loop
+  //This means that %00000001 or "1" will go through such
+  //that it will be pin Q0 that lights.
+  for (i = 7; i >= 0; i--)
+  {
+    digitalWrite(myClockPin, 0);
+
+    //if the value passed to myDataOut and a bitmask result
+    // true then... so if we are at i=6 and our value is
+    // %11010100 it would the code compares it to %01000000
+    // and proceeds to set pinState to 1.
+    if (myDataOut & (1 << i))
+    {
+      pinState = 1;
+    }
+    else
+    {
+      pinState = 0;
+    }
+
+    //Sets the pin to HIGH or LOW depending on pinState
+    digitalWrite(myDataPin, pinState);
+    //register shifts bits on upstroke of clock pin
+    digitalWrite(myClockPin, 1);
+    //zero the data pin after shift to prevent bleed through
+    digitalWrite(myDataPin, 0);
   }
+
+  //stop shifting
+  digitalWrite(myClockPin, 0);
 }
