@@ -1,10 +1,10 @@
 #define LENGTH_ARRAY(array) (sizeof(array) / sizeof((array)[0]))
 
 // PINS_CONNECIONS
-const int LATCH_PIN = 8;     //Pin connected to ST_CP of 74HC595
-const int CLOCK_PIN = 12;    //Pin connected to SH_CP of 74HC595
-const int DATA_PIN = 11;     ////Pin connected to DS of 74HC595
-const int DIRECTION_PIN = 4; ////Pin that control the direction
+const int DIRECTION_PIN = 11; ////Pin that control the direction
+const int LATCH_PIN = 10;  //Pin connected to ST_CP of 74HC595
+const int CLOCK_PIN = 9; //Pin connected to SH_CP of 74HC595
+const int DATA_PIN = 8;  ////Pin connected to DS of 74HC595
 
 // DELAYS
 const int DELAY_BETWEEN_WORDS = 2000;
