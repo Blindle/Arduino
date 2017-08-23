@@ -1,6 +1,6 @@
 const int DIRECTION_PIN = 11; ////Pin that control the direction
-const int LATCH_PIN = 10;  //Pin connected to ST_CP of 74HC595
-const int CLOCK_PIN = 9; //Pin connected to SH_CP of 74HC595
+const int LATCH_PIN = 9;  //Pin connected to ST_CP of 74HC595
+const int CLOCK_PIN = 10; //Pin connected to SH_CP of 74HC595
 const int DATA_PIN = 8;  ////Pin connected to DS of 74HC595
 
 const int RIGHT_DIRECTION = HIGH;
@@ -18,11 +18,11 @@ void setup()
   pinMode(DIRECTION_PIN, OUTPUT);
   Serial.begin(9600);
 }
-
+//2048
 void loop()
 {
   digitalWrite(DIRECTION_PIN, RIGHT_DIRECTION);
-  for (int j = 0; j < 20; j++)
+  for (int j = 0; j < 2048; j++)
   {
     sendDataToMultiplexors(BLINK_ALL_LED, BLINK_ALL_LED, 10);
     sendDataToMultiplexors(0, 0, 10);
