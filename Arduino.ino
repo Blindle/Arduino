@@ -57,8 +57,8 @@ void representWord(char *word)
 {
   Serial.print("Printing word: ");
   Serial.println(word);
-  int len = strlen(word);
-  for (int i = 0; i < len; i++)
+  int length = strlen(word);
+  for (int i = 0; i < length; i++)
   {
     representLetter(i, word[i]);
   }
