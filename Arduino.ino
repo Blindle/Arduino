@@ -2,24 +2,27 @@
 
 // PINS_CONNECIONS
 const int DIRECTION_PIN = 11; ////Pin that control the direction
-const int LATCH_PIN = 10;  //Pin connected to ST_CP of 74HC595
-const int CLOCK_PIN = 9; //Pin connected to SH_CP of 74HC595
-const int DATA_PIN = 8;  ////Pin connected to DS of 74HC595
+const int LATCH_PIN = 10;     //Pin connected to ST_CP of 74HC595
+const int CLOCK_PIN = 9;      //Pin connected to SH_CP of 74HC595
+const int DATA_PIN = 8;       ////Pin connected to DS of 74HC595
 
 // DELAYS
 const int DELAY_BETWEEN_WORDS = 2000;
-const int DELAY_BETWEEN_MOTOR_STEPS = 100;
+//const int DELAY_BETWEEN_MOTOR_STEPS = 100;
+const int DELAY_BETWEEN_MOTOR_STEPS = 1;
 
 // MOTOR_DIRECTIONS
 const int RIGHT_DIRECTION = HIGH;
 const int LEFT_DIRECTION = LOW;
 
 // MOTORS_VARIABLES
-const int NUMBER_OF_STEPS_PER_LOOP = 20;
+//const int NUMBER_OF_STEPS_PER_LOOP = 20;
+const int NUMBER_OF_STEPS_PER_LOOP = 2048;
 
 const char EMPTY_CHARACTER = '@';
 char lastWord[4] = {EMPTY_CHARACTER, EMPTY_CHARACTER, EMPTY_CHARACTER, EMPTY_CHARACTER};
-char *words[4] = {"AAAA", "AAAA", "AAAA", "AAAA"};
+//char *words[4] = {"AAAA", "AAAA", "AAAA", "AAAA"};
+char *words[1] = {"CCCC"};
 
 // ARDUINO_LIFE_CYCLES
 void setup()
@@ -57,53 +60,42 @@ void representWord(char *word)
 {
   Serial.print("Printing word: ");
   Serial.println(word);
-  int length = strlen(word);
-  for (int i = 0; i < length; i++)
+  int multiplexorData = 0b11111111;
+  for (int step = 0; step < NUMBER_OF_STEPS_PER_LOOP; step++)
   {
-    representLetter(i, word[i]);
-  }
-}
-
-void representLetter(int letterPosition, char letter)
-{
-  if (lastWord[letterPosition] != EMPTY_CHARACTER)
-  {
-    spinMotor(letterPosition, lastWord[letterPosition], LEFT_DIRECTION);
-  }
-
-  spinMotor(letterPosition, letter, RIGHT_DIRECTION);
-  lastWord[letterPosition] = letter;
-}
-
-const int multiplexorRemoval[4][2] = {
-    {0b01111111, 0b10111111},
-    {0b11011111, 0b11101111},
-    {0b01110111, 0b01111011},
-    {0b01111101, 0b01111110},
-};
-
-void spinMotor(int letterPosition, char letter, int dir)
-{
-  digitalWrite(DIRECTION_PIN, dir);
-  int *stepsPerMotor = getStepsPerMotor(letter);
-  for (int i = 0; i < NUMBER_OF_STEPS_PER_LOOP; i++)
-  {
-    int multiplexorData = getMultiplexorData(letterPosition, stepsPerMotor, i);
-    sendMultiplexorData(multiplexorData);
+    int multiplexorData = getMultiplexorData(word, step); // when it returns 0 the motors wont spin
+    // if(multiplexorData != 0)
+      //Serial.println(multiplexorData);
+      
+    //sendMultiplexorData(multiplexorData);
+    //sendMultiplexorData(0b00000001); // so by doing this, only one motor should spin
+    sendMultiplexorData(0); // so by doing this, only one motor should spin
     delay(DELAY_BETWEEN_MOTOR_STEPS);
   }
 }
 
-int getMultiplexorData(int letterPosition, int *stepsPerMotor, int lap)
+const int multiplexorAdder[4][2] = {
+  {0b10000000, 0b01000000},
+  {0b00100000, 0b00010000},
+  {0b00001000, 0b00000100},
+  {0b00000010, 0b00000001},
+};
+
+int getMultiplexorData(char *word, int step)
 {
-  int multiplexorData = 0b11111111;
-  for (int j = 0; j < 2; j++)
+  int wordLength = strlen(word);
+  int multiplexorData = 0;
+  for (int i = 0; i < wordLength; i++)
   {
-    if (stepsPerMotor[j] >= lap)
-    {
-      multiplexorData = multiplexorData & multiplexorRemoval[letterPosition][j];
-    }
+    int *stepsPerMotor = getStepsPerMotor(word[i]);
+    
+    if(stepsPerMotor[0] * 102.4 >= step) 
+      multiplexorData = multiplexorData | multiplexorAdder[i][0];
+  
+    if(stepsPerMotor[1] * 102.4 >= step) 
+      multiplexorData = multiplexorData | multiplexorAdder[i][1];
   }
+
   return multiplexorData;
 }
 
