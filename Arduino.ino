@@ -12,7 +12,9 @@ int DATA_PIN = 8;       // Pin connected to DS of 74HC595
 int DELAY_BETWEEN_WORDS = 2000;
 int DELAY_BETWEEN_MOTOR_STEPS = 1;
 
-const char *words[2] = {"CCCC", "YYYY"};
+const char *words[3] = {"AAAA", "CCCC", "BBBB"};
+
+const char * mode = "Raspberry";
 
 WordRepresenter wordRepresenter(LATCH_PIN, CLOCK_PIN, DATA_PIN, DELAY_BETWEEN_MOTOR_STEPS);
 
@@ -26,6 +28,26 @@ void setup()
 
 void loop()
 {
+  if(strcmp(mode, "Raspberry") == 0) {
+    listenRaspberry();
+  } else {
+    representHardcodedWords();
+  }
+}
+
+void listenRaspberry(){
+  
+   if (Serial.available()) {
+      char wordChar[5]; 
+      Serial.readString().toCharArray(wordChar, 5);
+      
+      Serial.println(wordChar);
+      wordRepresenter.representWord(wordChar);
+      delay(DELAY_BETWEEN_WORDS);
+   }
+}
+
+void representHardcodedWords(){
   int length = LENGTH_ARRAY(words);
   for (int i = 0; i < length; i++)
   {

@@ -21,23 +21,35 @@ WordRepresenter::WordRepresenter(int latchPin, int clockPin, int dataPin, int de
 	_clockPin = clockPin;
 	_dataPin = dataPin;
 	_delayBetweenSteps = delayBetweenSteps;
-	_lastWord = "   ";
+	_lastWord = "    ";
 }
 
 void WordRepresenter::representWord(const char *word)
 {
+    Serial.println("");
     Serial.print("Printing word: ");
     Serial.println(word);
     int multiplexorData;
+    
+
+    Serial.print("The last word is: ");
+    Serial.println(_lastWord);
+
     for(int side = 0; side < NUMBER_OF_SIDES; side ++)
     {
       multiplexorData = getMultiplexorData(word, side);
+      
+      Serial.println(multiplexorData);
+
+      if(multiplexorData == 0) break; //in case that we dont have to move the steppers, we will cut the for. 
+
+
       for (int step = 0; step < NUMBER_OF_STEPS_PER_SIDE; step++)
       {
         sendMultiplexorData(multiplexorData);
       }
     }
-    _lastWord = word;
+    strcpy(_lastWord, word);
 }
 
 const int multiplexorAdder[4][2] = {
@@ -56,6 +68,7 @@ int WordRepresenter::getMultiplexorData(const char *word, int side)
 {
   int wordLength = strlen(word);
   int multiplexorData = 0;
+  Serial.println(word);
   for (int i = 0; i < wordLength; i++)
   {
     char letter = word[i];
@@ -65,10 +78,21 @@ int WordRepresenter::getMultiplexorData(const char *word, int side)
     {
       int sidesMotor = getNumberOfSidesPerMotor(letter, motorNumber);
       int lastSidesMotor = getNumberOfSidesPerMotor(lastLetter, motorNumber);
-      int sidesToTravel = getSides(sidesMotor, lastSidesMotor);
+      int sidesToTravel = getSides(lastSidesMotor, sidesMotor);
+      
+      if(i == 0 && side == 0){
 
-      if(sidesToTravel >= side)
+Serial.print(letter);
+Serial.print(lastLetter);
+      Serial.print(motorNumber);
+      Serial.print(": ");
+      Serial.println(sidesToTravel);
+      
+      }
+
+      if(sidesToTravel > side) {
         multiplexorData = multiplexorData | multiplexorAdder[i][motorNumber];
+      }
     }
   }
 
@@ -94,6 +118,9 @@ int WordRepresenter::getNumberOfSidesPerMotor(char letter, int motorNumber) {
     case 'A': return isFirstMotor ? 1 : 0;
     case 'B': return isFirstMotor ? 3 : 0;
     case 'C': return isFirstMotor ? 1 : 1;
+    case 'D': return isFirstMotor ? 1 : 1;
+    case 'E': return isFirstMotor ? 1 : 2;
+    case 'F': return isFirstMotor ? 3 : 1;
     default: return 0;
   }
   return 0;
