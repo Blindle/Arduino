@@ -7,59 +7,35 @@
 #include "Arduino.h"
 #include "WordRepresenter.h"
 
-#define LENGTH_ARRAY(array) (sizeof(array) / sizeof((array)[0]))
-
-// PINS_CONNECIONS
-const int DIRECTION_PIN = 11; ////Pin that control the direction
-
-const int CLOCK_PIN = 10; //Pin connected to SH_CP of 74HC595
-const int LATCH_PIN = 9;  //Pin connected to ST_CP of 74HC595
-const int DATA_PIN = 8;       ////Pin connected to DS of 74HC595
-
-// DELAYS
-const int DELAY_BETWEEN_WORDS = 2000;
-//const int DELAY_BETWEEN_MOTOR_STEPS = 100;
-const int DELAY_BETWEEN_MOTOR_STEPS = 1;
-
-// MOTOR_DIRECTIONS
-const int RIGHT_DIRECTION = HIGH;
-const int LEFT_DIRECTION = LOW;
-
-// MOTORS_VARIABLES
-//const int NUMBER_OF_STEPS_PER_LOOP = 20;
 const int NUMBER_OF_STEPS_PER_LOOP = 2048;
 
 const char EMPTY_CHARACTER = '@';
-char lastWord[4] = {EMPTY_CHARACTER, EMPTY_CHARACTER, EMPTY_CHARACTER, EMPTY_CHARACTER};
-//char *words[4] = {"AAAA", "AAAA", "AAAA", "AAAA"};
-char *words[1] = {"CCCC"};
 
-
-WordRepresenter::WordRepresenter(int pin)
+WordRepresenter::WordRepresenter(int latchPin, int clockPin, int dataPin, int delayBetweenSteps)
 {
-//   pinMode(pin, OUTPUT);
-//   _pin = pin;
+  	pinMode(latchPin, OUTPUT);
+  	pinMode(clockPin, OUTPUT);
+	pinMode(dataPin, OUTPUT);
+	_latchPin = latchPin;
+	_clockPin = clockPin;
+	_dataPin = dataPin;
+	_delayBetweenSteps = delayBetweenSteps;
+	_lastWord = "";
 }
 
-void WordRepresenter::representWord(char *word)
+void WordRepresenter::representWord(const char *word)
 {
     Serial.print("Printing word: ");
     Serial.println(word);
-    int multiplexorData = 0b11111111;
+    int multiplexorData;
     for (int step = 0; step < NUMBER_OF_STEPS_PER_LOOP; step++)
     {
-      int multiplexorData = getMultiplexorData(word, step); // when it returns 0 the motors wont spin
-      // if(multiplexorData != 0)
-        //Serial.println(multiplexorData);
-        
-      //sendMultiplexorData(multiplexorData);
-      //sendMultiplexorData(0b00000001); // so by doing this, only one motor should spin
-      // sendMultiplexorData(0b11110000); // so by doing this, only one motor should spin
-       sendMultiplexorData(0b00000011); // so by doing this, only one motor should spin
-      
-  //    delay(DELAY_BETWEEN_MOTOR_STEPS);
-  
+      multiplexorData = getMultiplexorData(word, step);
+      sendMultiplexorData(multiplexorData);
     }
+    _lastWord = word;
+    Serial.print("Word printed: ");
+    Serial.println(_lastWord);
 }
 
 const int multiplexorAdder[4][2] = {
@@ -69,7 +45,7 @@ const int multiplexorAdder[4][2] = {
   {0b00000010, 0b00000001},
 };
 
-int getMultiplexorData(char *word, int step)
+int WordRepresenter::getMultiplexorData(const char *word, int step)
 {
   int wordLength = strlen(word);
   int multiplexorData = 0;
@@ -87,20 +63,20 @@ int getMultiplexorData(char *word, int step)
   return multiplexorData;
 }
 
-void sendMultiplexorData(int data)
+void WordRepresenter::sendMultiplexorData(int data)
 {
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, data);   
-  digitalWrite(LATCH_PIN, HIGH);
-  delay(10);
+  digitalWrite(_latchPin, LOW);
+  shiftOut(_dataPin, _clockPin, LSBFIRST, data);   
+  digitalWrite(_latchPin, HIGH);
+  delay(_delayBetweenSteps);
 
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, 0);   
-  digitalWrite(LATCH_PIN, HIGH);
-  delay(10);
+  digitalWrite(_latchPin, LOW);
+  shiftOut(_dataPin, _clockPin, LSBFIRST, 0);   
+  digitalWrite(_latchPin, HIGH);
+  delay(_delayBetweenSteps);
 }
 
-int *getStepsPerMotor(char letter)
+int * WordRepresenter::getStepsPerMotor(char letter)
 {
   static int stepsPerMotor[2];
   switch (letter)
