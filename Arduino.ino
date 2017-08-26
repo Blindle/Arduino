@@ -1,99 +1,28 @@
+#include <WordRepresenter.h>
+
 #define LENGTH_ARRAY(array) (sizeof(array) / sizeof((array)[0]))
 
 // PINS_CONNECIONS
-const int DIRECTION_PIN = 11; ////Pin that control the direction
-
-const int CLOCK_PIN = 10; //Pin connected to SH_CP of 74HC595
-const int LATCH_PIN = 9;  //Pin connected to ST_CP of 74HC595
-const int DATA_PIN = 8;       ////Pin connected to DS of 74HC595
+int DIRECTION_PIN = 11; ////Pin that control the direction
+int CLOCK_PIN = 10; //Pin connected to SH_CP of 74HC595
+int LATCH_PIN = 9;  //Pin connected to ST_CP of 74HC595
+int DATA_PIN = 8;       //Pin connected to DS of 74HC595
 
 // DELAYS
-const int DELAY_BETWEEN_WORDS = 2000;
-//const int DELAY_BETWEEN_MOTOR_STEPS = 100;
-const int DELAY_BETWEEN_MOTOR_STEPS = 1;
+int DELAY_BETWEEN_WORDS = 2000;
+int DELAY_BETWEEN_MOTOR_STEPS = 1;
 
-// MOTOR_DIRECTIONS
-const int RIGHT_DIRECTION = HIGH;
-const int LEFT_DIRECTION = LOW;
-
-// MOTORS_VARIABLES
-//const int NUMBER_OF_STEPS_PER_LOOP = 20;
-const int NUMBER_OF_STEPS_PER_LOOP = 2048;
-
-const char EMPTY_CHARACTER = '@';
-char lastWord[4] = {EMPTY_CHARACTER, EMPTY_CHARACTER, EMPTY_CHARACTER, EMPTY_CHARACTER};
-//char *words[4] = {"AAAA", "AAAA", "AAAA", "AAAA"};
 char *words[1] = {"CCCC"};
+
+WordRepresenter wordRepresenter(LATCH_PIN, CLOCK_PIN, DATA_PIN, DELAY_BETWEEN_MOTOR_STEPS);
 
 // ARDUINO_LIFE_CYCLES
 void setup()
 {
-  pinMode(LATCH_PIN, OUTPUT);
-  pinMode(CLOCK_PIN, OUTPUT);
-  pinMode(DATA_PIN, OUTPUT);
   pinMode(DIRECTION_PIN, OUTPUT);
+  digitalWrite(DIRECTION_PIN, HIGH);
+  
   Serial.begin(9600);
-}
-
-/* TODO: please create a library in order to remove a lot of code inside here,
-  remember that this file has to manage only the life cycle of the arduino
-
-  In my opinion, I will create 3 files more:
-    - Configuration: manage all the pins, motors, and other configuration that we have.
-    - Utils: store our helper functions, such as LENGHT_ARRAY, also I will love to have a function that can print more than one value.
-    - [INSERT_LIBRARY_NAME_HERE]: will have only one public method --> representWord
-        - Also it can have a constructor that will take the ammount of letters!
-*/
-
-// the heart of the program
-void myShiftOut(int myDataPin, int myClockPin, byte myDataOut)
-{
-  // This shifts 8 bits out MSB first,
-  //on the rising edge of the clock,
-  //clock idles low
-
-  //internal function setup
-  int i = 0;
-  int pinState;
-  pinMode(myClockPin, OUTPUT);
-  pinMode(myDataPin, OUTPUT);
-
-  //clear everything out just in case to
-  //prepare shift register for bit shifting
-  digitalWrite(myDataPin, 0);
-  digitalWrite(myClockPin, 0);
-
-  //for each bit in the byte myDataOut�
-  //NOTICE THAT WE ARE COUNTING DOWN in our for loop
-  //This means that %00000001 or "1" will go through such
-  //that it will be pin Q0 that lights.
-  for (i = 7; i >= 0; i--)
-  {
-    digitalWrite(myClockPin, 0);
-
-    //if the value passed to myDataOut and a bitmask result
-    // true then... so if we are at i=6 and our value is
-    // %11010100 it would the code compares it to %01000000
-    // and proceeds to set pinState to 1.
-    if (myDataOut & (1 << i))
-    {
-      pinState = 1;
-    }
-    else
-    {
-      pinState = 0;
-    }
-
-    //Sets the pin to HIGH or LOW depending on pinState
-    digitalWrite(myDataPin, pinState);
-    //register shifts bits on upstroke of clock pin
-    digitalWrite(myClockPin, 1);
-    //zero the data pin after shift to prevent bleed through
-    digitalWrite(myDataPin, 0);
-  }
-
-  //stop shifting
-  digitalWrite(myClockPin, 0);
 }
 
 void loop()
@@ -101,244 +30,9 @@ void loop()
   int length = LENGTH_ARRAY(words);
   for (int i = 0; i < length; i++)
   {
-    representWord(words[i]);
+    wordRepresenter.representWord(words[i]);
     delay(DELAY_BETWEEN_WORDS);
   }
 
   Serial.println("End of printing words!");
 }
-
-void representWord(char *word)
-{
-  Serial.print("Printing word: ");
-  Serial.println(word);
-  int multiplexorData = 0b11111111;
-  for (int step = 0; step < NUMBER_OF_STEPS_PER_LOOP; step++)
-  {
-    int multiplexorData = getMultiplexorData(word, step); // when it returns 0 the motors wont spin
-    // if(multiplexorData != 0)
-      //Serial.println(multiplexorData);
-      
-    //sendMultiplexorData(multiplexorData);
-    //sendMultiplexorData(0b00000001); // so by doing this, only one motor should spin
-    // sendMultiplexorData(0b11110000); // so by doing this, only one motor should spin
-    // sendMultiplexorData(0b00000011); // so by doing this, only one motor should spin
-    
-//    delay(DELAY_BETWEEN_MOTOR_STEPS);
-
-  }
-}
-
-const int multiplexorAdder[4][2] = {
-  {0b10000000, 0b01000000},
-  {0b00100000, 0b00010000},
-  {0b00001000, 0b00000100},
-  {0b00000010, 0b00000001},
-};
-
-int getMultiplexorData(char *word, int step)
-{
-  int wordLength = strlen(word);
-  int multiplexorData = 0;
-  for (int i = 0; i < wordLength; i++)
-  {
-    int *stepsPerMotor = getStepsPerMotor(word[i]);
-    
-    if(stepsPerMotor[0] * 102.4 >= step) 
-      multiplexorData = multiplexorData | multiplexorAdder[i][0];
-  
-    if(stepsPerMotor[1] * 102.4 >= step) 
-      multiplexorData = multiplexorData | multiplexorAdder[i][1];
-  }
-
-  return multiplexorData;
-}
-
-void sendMultiplexorData(int data)
-{
-  digitalWrite(LATCH_PIN, LOW);
-  // myShiftOut(DATA_PIN, CLOCK_PIN, data);
-  shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, data);   
-  // shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, data);
-  digitalWrite(LATCH_PIN, HIGH);
-  delay(10);
-
-  digitalWrite(LATCH_PIN, LOW);
-  // myShiftOut(DATA_PIN, CLOCK_PIN, 0);
-  shiftOut(DATA_PIN, CLOCK_PIN, LSBFIRST, 0);   
-  // shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, data);
-  digitalWrite(LATCH_PIN, HIGH);
-  delay(10);
-}
-
-int *getStepsPerMotor(char letter)
-{
-  static int stepsPerMotor[2];
-  switch (letter)
-  {
-  case 'A':
-  {
-    stepsPerMotor[0] = 6;
-    stepsPerMotor[1] = 0;
-    break;
-  }
-  case 'B':
-  {
-    stepsPerMotor[0] = 10;
-    stepsPerMotor[1] = 0;
-    break;
-  }
-  case 'C':
-  {
-    stepsPerMotor[0] = 6;
-    stepsPerMotor[1] = 12;
-    break;
-  }
-  case 'D':
-  {
-    stepsPerMotor[0] = 6;
-    stepsPerMotor[1] = 16;
-    break;
-  }
-  case 'E':
-  {
-    stepsPerMotor[0] = 6;
-    stepsPerMotor[1] = 8;
-    break;
-  }
-  case 'F':
-  {
-    stepsPerMotor[0] = 10;
-    stepsPerMotor[1] = 12;
-    break;
-  }
-  case 'G':
-  {
-    stepsPerMotor[0] = 10;
-    stepsPerMotor[1] = 16;
-    break;
-  }
-  case 'H':
-  {
-    stepsPerMotor[0] = 10;
-    stepsPerMotor[1] = 8;
-    break;
-  }
-  case 'I':
-  {
-    stepsPerMotor[0] = 8;
-    stepsPerMotor[1] = 12;
-    break;
-  }
-  case 'J':
-  {
-    stepsPerMotor[0] = 8;
-    stepsPerMotor[1] = 16;
-    break;
-  }
-  case 'K':
-  {
-    stepsPerMotor[0] = 14;
-    stepsPerMotor[1] = 0;
-    break;
-  }
-  case 'L':
-  {
-    stepsPerMotor[0] = 18;
-    stepsPerMotor[1] = 0;
-    break;
-  }
-  case 'M':
-  {
-    stepsPerMotor[0] = 14;
-    stepsPerMotor[1] = 12;
-    break;
-  }
-  case 'N':
-  {
-    stepsPerMotor[0] = 18;
-    stepsPerMotor[1] = 16;
-    break;
-  }
-  case 'O':
-  {
-    stepsPerMotor[0] = 14;
-    stepsPerMotor[1] = 8;
-    break;
-  }
-  case 'P':
-  {
-    stepsPerMotor[0] = 18;
-    stepsPerMotor[1] = 12;
-    break;
-  }
-  case 'Q':
-  {
-    stepsPerMotor[0] = 18;
-    stepsPerMotor[1] = 16;
-    break;
-  }
-  case 'R':
-  {
-    stepsPerMotor[0] = 18;
-    stepsPerMotor[1] = 8;
-    break;
-  }
-  case 'S':
-  {
-    stepsPerMotor[0] = 16;
-    stepsPerMotor[1] = 12;
-    break;
-  }
-  case 'T':
-  {
-    stepsPerMotor[0] = 16;
-    stepsPerMotor[1] = 16;
-    break;
-  }
-  case 'U':
-  {
-    stepsPerMotor[0] = 14;
-    stepsPerMotor[1] = 6;
-    break;
-  }
-  case 'V':
-  {
-    stepsPerMotor[0] = 18;
-    stepsPerMotor[1] = 6;
-    break;
-  }
-  case 'W':
-  {
-    stepsPerMotor[0] = 8;
-    stepsPerMotor[1] = 18;
-    break;
-  }
-  case 'X':
-  {
-    stepsPerMotor[0] = 14;
-    stepsPerMotor[1] = 14;
-    break;
-  }
-  case 'Y':
-  {
-    stepsPerMotor[0] = 14;
-    stepsPerMotor[1] = 18;
-    break;
-  }
-  case 'Z':
-  {
-    stepsPerMotor[0] = 14;
-    stepsPerMotor[1] = 10;
-    break;
-  }
-  default:
-  {
-    stepsPerMotor[0] = 0;
-    stepsPerMotor[1] = 0;
-  }
-  }
-  return stepsPerMotor;
-}
-
-
