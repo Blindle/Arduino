@@ -8,6 +8,8 @@
 #include "WordRepresenter.h"
 
 const int NUMBER_OF_STEPS_PER_LOOP = 2048;
+const int NUMBER_OF_SIDES = 8;
+const int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP/NUMBER_OF_SIDES; //256
 
 WordRepresenter::WordRepresenter(int latchPin, int clockPin, int dataPin, int delayBetweenSteps)
 {
@@ -26,10 +28,13 @@ void WordRepresenter::representWord(const char *word)
     Serial.print("Printing word: ");
     Serial.println(word);
     int multiplexorData;
-    for (int step = 0; step < NUMBER_OF_STEPS_PER_LOOP; step++)
+    for(int side = 0; side < NUMBER_OF_SIDES; side ++) // 8 is the amount of side in the barrel
     {
-      multiplexorData = getMultiplexorData(word, step);
-      sendMultiplexorData(multiplexorData);
+      multiplexorData = getMultiplexorData(word, side);
+      for (int step = 0; step < NUMBER_OF_STEPS_PER_SIDE; step++)
+      {
+        sendMultiplexorData(multiplexorData);
+      }
     }
     _lastWord = word;
 }
@@ -41,13 +46,28 @@ const int multiplexorAdder[4][2] = {
   {0b00000010, 0b00000001},
 };
 
-int WordRepresenter::getMultiplexorData(const char *word, int step)
+int WordRepresenter::getSides(int s0, int s1)
+{
+  return (NUMBER_OF_SIDES - s0 + s1) % NUMBER_OF_SIDES; 
+}
+
+int WordRepresenter::getMultiplexorData(const char *word, int side)
 {
   int wordLength = strlen(word);
   int multiplexorData = 0;
   for (int i = 0; i < wordLength; i++)
   {
-    int *stepsPerMotor = getStepsPerMotor(word[i]);
+    char letter = word([i]);
+    char lastLetter = _lastWord([i]);
+
+    int sidesFirstMotor = getNumberOfSidesPerMotor(letter, true);
+    int lastSidesFirstMotor = getNumberOfSidesPerMotor(lastLetter, true);
+
+
+    int sidesSecondMotor = getNumberOfSidesPerMotor(letter, false);
+
+
+    int sidesSecondMotor = getNumberOfSidesPerMotor(lastLetter, false);
     // TODO: Please we need to take a look at this part of the program, it could have a lot of cases ...
     // int *stepsPerMotor = getStepsPerMotor(_lastWord[i]);
 
@@ -61,10 +81,10 @@ int WordRepresenter::getMultiplexorData(const char *word, int step)
     //   }
     // }
     
-    if(stepsPerMotor[0] * 102.4 >= step)
+    if(sidesFirstMotor >= side)
       multiplexorData = multiplexorData | multiplexorAdder[i][0];
   
-    if(stepsPerMotor[1] * 102.4 >= step)
+    if(sidesSecondMotor >= side)
       multiplexorData = multiplexorData | multiplexorAdder[i][1];
   }
 
@@ -82,6 +102,16 @@ void WordRepresenter::sendMultiplexorData(int data)
   shiftOut(_dataPin, _clockPin, LSBFIRST, 0);
   digitalWrite(_latchPin, HIGH);
   delay(_delayBetweenSteps);
+}
+
+int WordRepresenter::getNumberOfSidesPerMotor(char letter, bool isFirstMotor) {
+  switch(letter){
+    case 'A': return isFirstMotor ? 1 : 0;
+    case 'B': return isFirstMotor ? 3 : 0;
+    case 'C': return isFirstMotor ? 1 : 1;
+    default: return 0;
+  }
+  return 0;
 }
 
 int * WordRepresenter::getStepsPerMotor(char letter)

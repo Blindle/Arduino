@@ -15,8 +15,9 @@ class WordRepresenter
     WordRepresenter(int latchPin, int clockPin, int dataPin, int delayBetweenSteps);
     void representWord(const char *word);
   private:
-  	int getMultiplexorData(const char *word, int step);
+  	int getMultiplexorData(const char *word, int side);
   	void sendMultiplexorData(int data);
+    int getNumberOfSidesPerMotor(char letter, bool isFirstMotor);
   	int * getStepsPerMotor(char letter);
     int _latchPin;
     int _clockPin;
