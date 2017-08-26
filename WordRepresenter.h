@@ -17,7 +17,8 @@ class WordRepresenter
   private:
   	int getMultiplexorData(const char *word, int side);
   	void sendMultiplexorData(int data);
-    int getNumberOfSidesPerMotor(char letter, bool isFirstMotor);
+    int getNumberOfSidesPerMotor(char letter, int motorNumber);
+    int getSides(int initialSide, int sideToReach);
   	int * getStepsPerMotor(char letter);
     int _latchPin;
     int _clockPin;
