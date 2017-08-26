@@ -9,8 +9,6 @@
 
 const int NUMBER_OF_STEPS_PER_LOOP = 2048;
 
-const char EMPTY_CHARACTER = '@';
-
 WordRepresenter::WordRepresenter(int latchPin, int clockPin, int dataPin, int delayBetweenSteps)
 {
   	pinMode(latchPin, OUTPUT);
