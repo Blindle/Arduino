@@ -12,7 +12,7 @@ int DATA_PIN = 8;       // Pin connected to DS of 74HC595
 int DELAY_BETWEEN_WORDS = 2000;
 int DELAY_BETWEEN_MOTOR_STEPS = 1;
 
-const char *words[1] = {"CCCC"};
+const char *words[2] = {"CCCC", "YYYY"};
 
 WordRepresenter wordRepresenter(LATCH_PIN, CLOCK_PIN, DATA_PIN, DELAY_BETWEEN_MOTOR_STEPS);
 

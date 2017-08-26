@@ -20,7 +20,7 @@ WordRepresenter::WordRepresenter(int latchPin, int clockPin, int dataPin, int de
 	_clockPin = clockPin;
 	_dataPin = dataPin;
 	_delayBetweenSteps = delayBetweenSteps;
-	_lastWord = "";
+	_lastWord = "   ";
 }
 
 void WordRepresenter::representWord(const char *word)
@@ -34,8 +34,6 @@ void WordRepresenter::representWord(const char *word)
       sendMultiplexorData(multiplexorData);
     }
     _lastWord = word;
-    Serial.print("Word printed: ");
-    Serial.println(_lastWord);
 }
 
 const int multiplexorAdder[4][2] = {
@@ -52,11 +50,23 @@ int WordRepresenter::getMultiplexorData(const char *word, int step)
   for (int i = 0; i < wordLength; i++)
   {
     int *stepsPerMotor = getStepsPerMotor(word[i]);
+    // TODO: Please we need to take a look at this part of the program, it could have a lot of cases ...
+    // int *stepsPerMotor = getStepsPerMotor(_lastWord[i]);
+
+    // if(steps >= lastSteps) {
+    //   if(steps * 102.4 >= (currentStep + lastSteps * 102.4)) {
+    //     multiplexorData = multiplexorData | multiplexorAdder[i][0];
+    //   } 
+    // } else {
+    //   if((lastSteps - steps) * 102.4 >= currentStep){
+    //     multiplexorData = multiplexorData | multiplexorAdder[i][0];
+    //   }
+    // }
     
-    if(stepsPerMotor[0] * 102.4 >= step) 
+    if(stepsPerMotor[0] * 102.4 >= step)
       multiplexorData = multiplexorData | multiplexorAdder[i][0];
   
-    if(stepsPerMotor[1] * 102.4 >= step) 
+    if(stepsPerMotor[1] * 102.4 >= step)
       multiplexorData = multiplexorData | multiplexorAdder[i][1];
   }
 
@@ -66,12 +76,12 @@ int WordRepresenter::getMultiplexorData(const char *word, int step)
 void WordRepresenter::sendMultiplexorData(int data)
 {
   digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, LSBFIRST, data);   
+  shiftOut(_dataPin, _clockPin, LSBFIRST, data);
   digitalWrite(_latchPin, HIGH);
   delay(_delayBetweenSteps);
 
   digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, LSBFIRST, 0);   
+  shiftOut(_dataPin, _clockPin, LSBFIRST, 0);
   digitalWrite(_latchPin, HIGH);
   delay(_delayBetweenSteps);
 }
