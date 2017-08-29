@@ -13,7 +13,7 @@ int DELAY_BETWEEN_WORDS = 2000;
 int DELAY_BETWEEN_MOTOR_STEPS = 1;
 
 // MODES
-const int ARDUINO_MODE = 1;
+const int RASPBERRY_MODE = 1;
 const int MANUAL_MODE = 2;
 char *words[3] = {"AAAA", "CCCC", "BBBB"};
 
@@ -26,14 +26,14 @@ void setup()
   digitalWrite(DIRECTION_PIN, HIGH);
 
   Serial.begin(9600);
-  selectedMode = ARDUINO_MODE;
+  selectedMode = MANUAL_MODE;
 }
 
 void loop()
 {
   switch (selectedMode)
   {
-  case ARDUINO_MODE:
+  case RASPBERRY_MODE:
     return listenRaspberry();
   case MANUAL_MODE:
   default:
