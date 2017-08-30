@@ -26,7 +26,7 @@ void setup()
   digitalWrite(DIRECTION_PIN, HIGH);
 
   Serial.begin(9600);
-  selectedMode = MANUAL_MODE;
+  selectedMode = RASPBERRY_MODE;
 }
 
 void loop()
