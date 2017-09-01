@@ -11,14 +11,15 @@ int DATA_PIN = 8;       // Pin connected to DS of 74HC595
 // DELAYS
 int DELAY_BETWEEN_WORDS = 2000;
 int DELAY_BETWEEN_MOTOR_STEPS = 1;
+int DELAY_ERROR_SERIAL = 10000;
 
 // MODES
-const int RASPBERRY_MODE = 1;
+const int SERIAL_PORT = 1;
 const int MANUAL_MODE = 2;
 char *words[3] = {"AAAA", "CCCC", "BBBB"};
 
 WordRepresenter wordRepresenter(LATCH_PIN, CLOCK_PIN, DATA_PIN, DELAY_BETWEEN_MOTOR_STEPS);
-int selectedMode;
+int selectedMode = SERIAL_PORT;
 
 void setup()
 {
@@ -26,22 +27,21 @@ void setup()
   digitalWrite(DIRECTION_PIN, HIGH);
 
   Serial.begin(9600);
-  selectedMode = RASPBERRY_MODE;
 }
 
 void loop()
 {
   switch (selectedMode)
   {
-  case RASPBERRY_MODE:
-    return listenRaspberry();
+  case SERIAL_PORT:
+    return listenSerialPort();
   case MANUAL_MODE:
   default:
     return representHardcodedWords();
   }
 }
 
-void listenRaspberry()
+void listenSerialPort()
 {
 
   if (Serial.available())
@@ -49,9 +49,12 @@ void listenRaspberry()
     char wordChar[5];
     Serial.readString().toCharArray(wordChar, 5);
 
-    Serial.println(wordChar);
     wordRepresenter.representWord(wordChar);
-    delay(DELAY_BETWEEN_WORDS);
+  }
+  else
+  {
+    Serial.println("SERIAL PORT IS NOT AVAILABLE, PLEASE CHECK!");
+    delay(DELAY_ERROR_SERIAL);
   }
 }
 
@@ -63,6 +66,4 @@ void representHardcodedWords()
     wordRepresenter.representWord(words[i]);
     delay(DELAY_BETWEEN_WORDS);
   }
-
-  Serial.println("End of printing words!");
 }
