@@ -13,12 +13,13 @@ class InputManager
 {
 public:
   InputManager(int mode);
-  void processInput();
+  char * getInput();
 
 private:
-    void listenSerialPort();
-    void representHardcodedWords();
+    char * listenSerialPort();
+    char * representHardcodedWords();
     int _mode;
+    int _hardcodedWordIndex;
 };
 
 #endif

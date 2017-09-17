@@ -14,7 +14,6 @@ int DELAY_BETWEEN_MOTOR_STEPS = 1;
 
 WordRepresenter wordRepresenter(LATCH_PIN, CLOCK_PIN, DATA_PIN, DELAY_BETWEEN_MOTOR_STEPS);
 InputManager inputManager(1);
-int selectedMode = SERIAL_PORT;
 
 void setup()
 {
@@ -26,6 +25,6 @@ void setup()
 
 void loop()
 {
-  char* word = inputManager.processInput();
-  WordRepresenter.representWord(word);
+  char* word = inputManager.getInput();
+  wordRepresenter.representWord(word);
 }

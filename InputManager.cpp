@@ -21,7 +21,7 @@ InputManager::InputManager(int mode)
     _hardcodedWordIndex = 0;
 }
 
-void InputManager::getInput()
+char * InputManager::getInput()
 {
     switch (_mode)
     {
