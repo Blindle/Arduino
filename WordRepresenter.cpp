@@ -91,26 +91,3 @@ void WordRepresenter::sendMultiplexorData(int data)
   digitalWrite(_latchPin, HIGH);
   delay(_delayBetweenSteps);
 }
-
-int WordRepresenter::getNumberOfSidesPerMotor(char letter, int motorNumber)
-{
-  int isFirstMotor = motorNumber == 0;
-  switch (letter)
-  {
-  case 'A':
-    return isFirstMotor ? 1 : 0;
-  case 'B':
-    return isFirstMotor ? 3 : 0;
-  case 'C':
-    return isFirstMotor ? 1 : 1;
-  case 'D':
-    return isFirstMotor ? 1 : 3;
-  case 'E':
-    return isFirstMotor ? 1 : 2;
-  case 'F':
-    return isFirstMotor ? 3 : 1;
-  default:
-    return 0;
-  }
-  return 0;
-}
