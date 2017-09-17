@@ -17,7 +17,7 @@ public:
 
 private:
     char * listenSerialPort();
-    char * representHardcodedWords();
+    char * getHardcodedWord();
     int _mode;
     int _hardcodedWordIndex;
 };

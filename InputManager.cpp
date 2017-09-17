@@ -29,7 +29,7 @@ char * InputManager::getInput()
         return listenSerialPort();
     case MANUAL_MODE:
     default:
-        return representHardcodedWords();
+        return getHardcodedWord();
     }
 }
 
@@ -43,7 +43,7 @@ char * InputManager::listenSerialPort()
     return result;
 }
 
-char * InputManager::representHardcodedWords()
+char * InputManager::getHardcodedWord()
 {
     char *words[3] = {"AAAA", "CCCC", "BBBB"};
     delay(DELAY_BETWEEN_WORDS);
