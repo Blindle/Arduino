@@ -15,13 +15,6 @@ const int MOTORS_PER_LETTER = 2;
 
 WordRepresenter::WordRepresenter(MultiplexorHandler &multiplexorHandler) : _multiplexorHandler(multiplexorHandler)
 {
-  // pinMode(latchPin, OUTPUT);
-  // pinMode(clockPin, OUTPUT);
-  // pinMode(dataPin, OUTPUT);
-  // _latchPin = latchPin;
-  // _clockPin = clockPin;
-  // _dataPin = dataPin;
-  // _multiplexorHandler = multiplexorHandler;
   _lastWord = "    ";
 }
 

@@ -27,24 +27,12 @@ const int MULTIPLEXOR_DATA_BY_MOTOR_NUMBER[8] = {
 
 BarrelArranger::BarrelArranger(MultiplexorHandler &multiplexorHandler, int directionPin) : _multiplexorHandler(multiplexorHandler)
 {
-//   pinMode(latchPin, OUTPUT);
-//   pinMode(clockPin, OUTPUT);
-//   pinMode(dataPin, OUTPUT);
-
   pinMode(directionPin, OUTPUT);
   digitalWrite(directionPin, RIGHT_DIRECTION);
-
-  //   _latchPin = latchPin;
-//   _clockPin = clockPin;
-//   _dataPin = dataPin;
-// _multiplexorHandler = multiplexorHandler;
     
   _directionPin = directionPin;
   _lastDirection = RIGHT_DIRECTION;
 }
-
-
-// digitalWrite(DIRECTION_PIN, HIGH);
 
 bool BarrelArranger::hasToMoveBarrel(char* word) {
     return word[0] == MOVE_BARREL_CHARACTER;

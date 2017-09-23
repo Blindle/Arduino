@@ -20,9 +20,7 @@ private:
   int getMultiplexorData(const char *word, int side);
   int getNumberOfSidesPerMotor(char letter, int motorNumber);
   int getSides(int initialSide, int sideToReach);
-  // int _latchPin;
-  // int _clockPin;
-  // int _dataPin;
+
   MultiplexorHandler _multiplexorHandler;
   int _delayBetweenSteps;
   const char *_lastWord;
