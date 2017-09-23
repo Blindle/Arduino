@@ -13,7 +13,7 @@ const int NUMBER_OF_SIDES = 8;
 const int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP / NUMBER_OF_SIDES; //256
 const int MOTORS_PER_LETTER = 2;
 
-WordRepresenter::WordRepresenter(MultiplexorHandler &multiplexorHandler)
+WordRepresenter::WordRepresenter(MultiplexorHandler &multiplexorHandler) : _multiplexorHandler(multiplexorHandler)
 {
   // pinMode(latchPin, OUTPUT);
   // pinMode(clockPin, OUTPUT);
@@ -21,7 +21,7 @@ WordRepresenter::WordRepresenter(MultiplexorHandler &multiplexorHandler)
   // _latchPin = latchPin;
   // _clockPin = clockPin;
   // _dataPin = dataPin;
-  _multiplexorHandler = multiplexorHandler;
+  // _multiplexorHandler = multiplexorHandler;
   _lastWord = "    ";
 }
 

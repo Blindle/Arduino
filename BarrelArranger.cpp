@@ -25,7 +25,7 @@ const int MULTIPLEXOR_DATA_BY_MOTOR_NUMBER[8] = {
 };
 
 
-BarrelArranger::BarrelArranger(MultiplexorHandler &multiplexorHandler, int directionPin)
+BarrelArranger::BarrelArranger(MultiplexorHandler &multiplexorHandler, int directionPin) : _multiplexorHandler(multiplexorHandler)
 {
 //   pinMode(latchPin, OUTPUT);
 //   pinMode(clockPin, OUTPUT);
@@ -33,13 +33,14 @@ BarrelArranger::BarrelArranger(MultiplexorHandler &multiplexorHandler, int direc
 
   pinMode(directionPin, OUTPUT);
   digitalWrite(directionPin, RIGHT_DIRECTION);
-//   _latchPin = latchPin;
+
+  //   _latchPin = latchPin;
 //   _clockPin = clockPin;
 //   _dataPin = dataPin;
-    _multiplexorHandler = multiplexorHandler;
+// _multiplexorHandler = multiplexorHandler;
+    
   _directionPin = directionPin;
   _lastDirection = RIGHT_DIRECTION;
-  
 }
 
 
@@ -51,8 +52,8 @@ bool BarrelArranger::hasToMoveBarrel(char* word) {
 
 // expected shape of word when moving a barrel --> -D1 (D is the corresponding direction and 1 is the motor number)
 void BarrelArranger::moveBarrel(char * word){
-    int direction = RIGHT_DIRECTION;
-    int motorNumber = 1;
+    int direction = word[1] == 'D' ? RIGHT_DIRECTION : LEFT_DIRECTION;
+    int motorNumber = (int)word[2] - 48;
 
     moveMotor(motorNumber, direction);
 }
