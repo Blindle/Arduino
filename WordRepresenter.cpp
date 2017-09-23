@@ -4,7 +4,7 @@
   Released into the public domain.
 */
 
-#include "Arduino.h"1
+#include "Arduino.h" 1
 #include "WordRepresenter.h"
 #include "MultiplexorHandler.h"
 

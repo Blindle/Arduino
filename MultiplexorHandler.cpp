@@ -21,13 +21,13 @@ MultiplexorHandler::MultiplexorHandler(int latchPin, int clockPin, int dataPin)
 
 void MultiplexorHandler::sendMultiplexorData(int data)
 {
-  digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, LSBFIRST, data);
-  digitalWrite(_latchPin, HIGH);
-  delay(DELAY_BETWEEN_MOTOR_STEPS);
+    digitalWrite(_latchPin, LOW);
+    shiftOut(_dataPin, _clockPin, LSBFIRST, data);
+    digitalWrite(_latchPin, HIGH);
+    delay(DELAY_BETWEEN_MOTOR_STEPS);
 
-  digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, LSBFIRST, 0);
-  digitalWrite(_latchPin, HIGH);
-  delay(DELAY_BETWEEN_MOTOR_STEPS);
+    digitalWrite(_latchPin, LOW);
+    shiftOut(_dataPin, _clockPin, LSBFIRST, 0);
+    digitalWrite(_latchPin, HIGH);
+    delay(DELAY_BETWEEN_MOTOR_STEPS);
 }

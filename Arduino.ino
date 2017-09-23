@@ -27,6 +27,6 @@ void loop()
 
   if (barrelArranger.hasToMoveBarrel(word))
     return barrelArranger.moveBarrel(word);
-  
+
   wordRepresenter.representWord(word);
 }

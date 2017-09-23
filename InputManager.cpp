@@ -14,14 +14,13 @@ const int MANUAL_MODE = 2;
 // DELAYS
 int DELAY_BETWEEN_WORDS = 2000;
 
-
 InputManager::InputManager(int mode)
 {
     _mode = mode;
     _hardcodedWordIndex = 0;
 }
 
-char * InputManager::getInput()
+char *InputManager::getInput()
 {
     switch (_mode)
     {
@@ -33,7 +32,7 @@ char * InputManager::getInput()
     }
 }
 
-char * InputManager::listenSerialPort()
+char *InputManager::listenSerialPort()
 {
     char result[5];
     if (Serial.available())
@@ -43,9 +42,9 @@ char * InputManager::listenSerialPort()
     return result;
 }
 
-char * InputManager::getHardcodedWord()
+char *InputManager::getHardcodedWord()
 {
     char *words[3] = {"AAAA", "CCCC", "BBBB"};
     delay(DELAY_BETWEEN_WORDS);
-    return words[_hardcodedWordIndex ++];
+    return words[_hardcodedWordIndex++];
 }

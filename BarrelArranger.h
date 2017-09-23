@@ -12,12 +12,12 @@
 
 class BarrelArranger
 {
-public:
-    BarrelArranger(MultiplexorHandler& _multiplexorHandler, int directionPin);
+  public:
+    BarrelArranger(MultiplexorHandler &_multiplexorHandler, int directionPin);
     void moveBarrel(char *word);
-    bool hasToMoveBarrel(char * word);
+    bool hasToMoveBarrel(char *word);
 
-private:
+  private:
     void moveMotor(int motorNumber, int direction);
 
     MultiplexorHandler _multiplexorHandler;
