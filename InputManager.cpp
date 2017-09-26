@@ -44,7 +44,7 @@ char *InputManager::listenSerialPort()
 
 char *InputManager::getHardcodedWord()
 {
-    char *words[3] = {"AAAA", "CCCC", "BBBB"};
+    char *words[3] = {"AAAA", "BBBB", "CCCC"};
     delay(DELAY_BETWEEN_WORDS);
-    return words[_hardcodedWordIndex++];
+    return words[_hardcodedWordIndex++ % 3];
 }

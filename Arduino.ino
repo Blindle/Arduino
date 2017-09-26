@@ -3,8 +3,6 @@
 #include "BarrelArranger.h"
 #include "MultiplexorHandler.h"
 
-#define LENGTH_ARRAY(array) (sizeof(array) / sizeof((array)[0]))
-
 // PINS_CONNECIONS
 int DIRECTION_PIN = 11; // Pin that controls the direction, connected to Pololu
 int CLOCK_PIN = 10;     // Pin connected to SH_CP of 74HC595

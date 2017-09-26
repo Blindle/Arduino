@@ -19,7 +19,8 @@ class BarrelArranger
 
   private:
     void moveMotor(int motorNumber, int direction);
-
+    int getDirection(char directionCharacter);
+    void restoreDirection(int direction) {
     MultiplexorHandler _multiplexorHandler;
     int _directionPin;
     int _lastDirection;
