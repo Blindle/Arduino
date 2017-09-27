@@ -4,23 +4,17 @@
   Released into the public domain.
 */
 
-#include "Arduino.h"
+#include "Arduino.h" 1
 #include "WordRepresenter.h"
+#include "MultiplexorHandler.h"
 
 const int NUMBER_OF_STEPS_PER_LOOP = 2048;
 const int NUMBER_OF_SIDES = 8;
 const int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP / NUMBER_OF_SIDES; //256
 const int MOTORS_PER_LETTER = 2;
 
-WordRepresenter::WordRepresenter(int latchPin, int clockPin, int dataPin, int delayBetweenSteps)
+WordRepresenter::WordRepresenter(MultiplexorHandler &multiplexorHandler) : _multiplexorHandler(multiplexorHandler)
 {
-  pinMode(latchPin, OUTPUT);
-  pinMode(clockPin, OUTPUT);
-  pinMode(dataPin, OUTPUT);
-  _latchPin = latchPin;
-  _clockPin = clockPin;
-  _dataPin = dataPin;
-  _delayBetweenSteps = delayBetweenSteps;
   _lastWord = "    ";
 }
 
@@ -36,7 +30,7 @@ void WordRepresenter::representWord(char *word)
 
     for (int step = 0; step < NUMBER_OF_STEPS_PER_SIDE; step++)
     {
-      sendMultiplexorData(multiplexorData);
+      _multiplexorHandler.sendMultiplexorData(multiplexorData);
     }
   }
   strcpy(_lastWord, word);
@@ -77,17 +71,4 @@ int WordRepresenter::getMultiplexorData(const char *word, int side)
   }
 
   return multiplexorData;
-}
-
-void WordRepresenter::sendMultiplexorData(int data)
-{
-  digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, LSBFIRST, data);
-  digitalWrite(_latchPin, HIGH);
-  delay(_delayBetweenSteps);
-
-  digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, LSBFIRST, 0);
-  digitalWrite(_latchPin, HIGH);
-  delay(_delayBetweenSteps);
 }

@@ -8,21 +8,20 @@
 #define WordRepresenter_h
 
 #include "Arduino.h"
+#include "MultiplexorHandler.h"
 
 class WordRepresenter
 {
 public:
-  WordRepresenter(int latchPin, int clockPin, int dataPin, int delayBetweenSteps);
+  WordRepresenter(MultiplexorHandler &multiplexorHandler);
   void representWord(char *word);
 
 private:
   int getMultiplexorData(const char *word, int side);
-  void sendMultiplexorData(int data);
   int getNumberOfSidesPerMotor(char letter, int motorNumber);
   int getSides(int initialSide, int sideToReach);
-  int _latchPin;
-  int _clockPin;
-  int _dataPin;
+
+  MultiplexorHandler _multiplexorHandler;
   int _delayBetweenSteps;
   const char *_lastWord;
 };
