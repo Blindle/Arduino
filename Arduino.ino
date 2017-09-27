@@ -25,8 +25,8 @@ void loop()
   digitalWrite(DIRECTION_PIN, RIGHT_DIRECTION);
   for (int j = 0; j < 2048; j++)
   {
-    sendDataToMultiplexors(BLINK_ALL_LED, BLINK_ALL_LED, 10);
-    sendDataToMultiplexors(0, 0, 10);
+    sendDataToMultiplexors(BLINK_ALL_LED, BLINK_ALL_LED, 1);
+    sendDataToMultiplexors(0, 0, 1);
   }
   delay(DELAY_BETWEEN_LETTERS);
 }
