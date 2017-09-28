@@ -4,14 +4,14 @@
   Released into the public domain.
 */
 
-#include "Arduino.h" 1
+#include "Arduino.h"
 #include "WordRepresenter.h"
 #include "MultiplexorHandler.h"
 
-const int NUMBER_OF_STEPS_PER_LOOP = 2048;
-const int NUMBER_OF_SIDES = 8;
-const int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP / NUMBER_OF_SIDES; //256
-const int MOTORS_PER_LETTER = 2;
+int NUMBER_OF_STEPS_PER_LOOP = 2048;
+int NUMBER_OF_SIDES = 8;
+int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP / NUMBER_OF_SIDES; //256
+int MOTORS_PER_LETTER = 2;
 
 WordRepresenter::WordRepresenter(MultiplexorHandler &multiplexorHandler) : _multiplexorHandler(multiplexorHandler)
 {

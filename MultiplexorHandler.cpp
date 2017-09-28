@@ -7,8 +7,8 @@
 #include "Arduino.h"
 #include "MultiplexorHandler.h"
 
-const int DELAY_BETWEEN_MOTOR_STEPS = 1;
-const int NO_DATA = 0;
+int DELAY_BETWEEN_MOTOR_STEPS = 1;
+int NO_DATA = 0;
 
 MultiplexorHandler::MultiplexorHandler(int latchPin, int clockPin, int dataPin)
 {
