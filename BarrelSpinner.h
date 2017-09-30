@@ -12,19 +12,19 @@
 
 class BarrelSpinner
 {
-  public:
-    BarrelSpinner(MultiplexorHandler &_multiplexorHandler, int directionPin);
-    void moveBarrel(String word);
-    static bool hasToMoveBarrel(String word);
+public:
+  BarrelSpinner(MultiplexorHandler &_multiplexorHandler, int directionPin);
+  void moveBarrel(String word);
+  static bool hasToMoveBarrel(String word);
 
-  private:
-    void moveMotor(int motorNumber, int direction);
-    int getDirection(char directionCharacter);
-    void setDirection(int direction);
+private:
+  void moveMotor(int motorNumber, int direction);
+  int getDirection(char directionCharacter);
+  void setDirection(int direction);
 
-    MultiplexorHandler _multiplexorHandler;
-    int _directionPin;
-    int _lastDirection;
+  MultiplexorHandler _multiplexorHandler;
+  int _directionPin;
+  int _lastDirection;
 };
 
 #endif

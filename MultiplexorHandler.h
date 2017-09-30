@@ -11,14 +11,14 @@
 
 class MultiplexorHandler
 {
-  public:
-    MultiplexorHandler(int latchPin, int clockPin, int dataPin);
-    void sendMultiplexorData(int data);
+public:
+  MultiplexorHandler(int latchPin, int clockPin, int dataPin);
+  void sendMultiplexorData(int data);
 
-  private:
-    int _latchPin;
-    int _clockPin;
-    int _dataPin;
+private:
+  int _latchPin;
+  int _clockPin;
+  int _dataPin;
 };
 
 #endif

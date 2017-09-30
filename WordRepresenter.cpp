@@ -8,10 +8,10 @@
 #include "WordRepresenter.h"
 #include "MultiplexorHandler.h"
 
-int NUMBER_OF_STEPS_PER_LOOP = 2048;
-int NUMBER_OF_SIDES = 8;
-int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP / NUMBER_OF_SIDES; //256
-int MOTORS_PER_LETTER = 2;
+const int NUMBER_OF_STEPS_PER_LOOP = 2048;
+const int NUMBER_OF_SIDES = 8;
+const int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP / NUMBER_OF_SIDES; //256
+const int MOTORS_PER_LETTER = 2;
 
 const String INITIAL_VALUE = "     ";
 

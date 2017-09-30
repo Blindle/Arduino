@@ -40,7 +40,8 @@ String InputManager::getInput()
 String InputManager::listenSerialPort()
 {
     String result = INITIAL_VALUE;
-    while(result == INITIAL_VALUE) {
+    while (result == INITIAL_VALUE)
+    {
         if (Serial.available())
         {
             result = Serial.readString();
