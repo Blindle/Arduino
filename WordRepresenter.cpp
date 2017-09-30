@@ -6,25 +6,21 @@
 
 #include "Arduino.h"
 #include "WordRepresenter.h"
+#include "MultiplexorHandler.h"
 
 const int NUMBER_OF_STEPS_PER_LOOP = 2048;
 const int NUMBER_OF_SIDES = 8;
 const int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP / NUMBER_OF_SIDES; //256
 const int MOTORS_PER_LETTER = 2;
 
-WordRepresenter::WordRepresenter(int latchPin, int clockPin, int dataPin, int delayBetweenSteps)
+const String INITIAL_VALUE = "     ";
+
+WordRepresenter::WordRepresenter(MultiplexorHandler &multiplexorHandler) : _multiplexorHandler(multiplexorHandler)
 {
-  pinMode(latchPin, OUTPUT);
-  pinMode(clockPin, OUTPUT);
-  pinMode(dataPin, OUTPUT);
-  _latchPin = latchPin;
-  _clockPin = clockPin;
-  _dataPin = dataPin;
-  _delayBetweenSteps = delayBetweenSteps;
-  _lastWord = "    ";
+  _lastWord = INITIAL_VALUE;
 }
 
-void WordRepresenter::representWord(char *word)
+void WordRepresenter::representWord(String word)
 {
   int multiplexorData;
   for (int side = 0; side < NUMBER_OF_SIDES; side++)
@@ -36,10 +32,10 @@ void WordRepresenter::representWord(char *word)
 
     for (int step = 0; step < NUMBER_OF_STEPS_PER_SIDE; step++)
     {
-      sendMultiplexorData(multiplexorData);
+      _multiplexorHandler.sendMultiplexorData(multiplexorData);
     }
   }
-  strcpy(_lastWord, word);
+  _lastWord = word;
 }
 
 const int multiplexorAdder[4][2] = {
@@ -54,9 +50,9 @@ int WordRepresenter::getSides(int initialSide, int sideToReach)
   return (NUMBER_OF_SIDES - initialSide + sideToReach) % NUMBER_OF_SIDES;
 }
 
-int WordRepresenter::getMultiplexorData(const char *word, int side)
+int WordRepresenter::getMultiplexorData(String word, int side)
 {
-  int wordLength = strlen(word);
+  int wordLength = word.length();
   int multiplexorData = 0;
   for (int i = 0; i < wordLength; i++)
   {
@@ -77,17 +73,4 @@ int WordRepresenter::getMultiplexorData(const char *word, int side)
   }
 
   return multiplexorData;
-}
-
-void WordRepresenter::sendMultiplexorData(int data)
-{
-  digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, LSBFIRST, data);
-  digitalWrite(_latchPin, HIGH);
-  delay(_delayBetweenSteps);
-
-  digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, LSBFIRST, 0);
-  digitalWrite(_latchPin, HIGH);
-  delay(_delayBetweenSteps);
 }
