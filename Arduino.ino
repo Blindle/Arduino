@@ -23,7 +23,8 @@ void loop()
 {
   String word = inputManager.getInput();
 
-  if (BarrelSpinner::hasToMoveBarrel(word)) {
+  if (BarrelSpinner::hasToMoveBarrel(word))
+  {
     return barrelSpinner.moveBarrel(word);
   }
 

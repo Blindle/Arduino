@@ -36,7 +36,7 @@ BarrelSpinner::BarrelSpinner(MultiplexorHandler &multiplexorHandler, int directi
 {
     _directionPin = directionPin;
     _lastDirection = DEFAULT_DIRECTION;
-    
+
     pinMode(_directionPin, OUTPUT);
     digitalWrite(_directionPin, DEFAULT_DIRECTION);
 }
@@ -60,7 +60,8 @@ void BarrelSpinner::moveBarrel(String word)
     setDirection(DEFAULT_DIRECTION);
 }
 
-int BarrelSpinner::getDirection(char directionCharacter) {
+int BarrelSpinner::getDirection(char directionCharacter)
+{
     return directionCharacter == LEFT_CHARACTER ? LEFT_DIRECTION : RIGHT_DIRECTION;
 }
 
@@ -74,7 +75,8 @@ void BarrelSpinner::moveMotor(int motorNumber, int direction)
     }
 }
 
-void BarrelSpinner::setDirection(int direction) {
+void BarrelSpinner::setDirection(int direction)
+{
     if (_lastDirection != direction)
     {
         digitalWrite(_directionPin, direction);
