@@ -1,5 +1,5 @@
 /*
-  BarrelSpinner.h - Library for manualy moving an specific to the right or to the left
+  BarrelSpinner.h - Library for manualy moving an specific stepper motor to the right or to the left
   Created by Blindle, 22 Sept, 2017.
   Released into the public domain.
 */
