@@ -13,12 +13,14 @@ int NUMBER_OF_SIDES = 8;
 int NUMBER_OF_STEPS_PER_SIDE = NUMBER_OF_STEPS_PER_LOOP / NUMBER_OF_SIDES; //256
 int MOTORS_PER_LETTER = 2;
 
+const String INITIAL_VALUE = "     ";
+
 WordRepresenter::WordRepresenter(MultiplexorHandler &multiplexorHandler) : _multiplexorHandler(multiplexorHandler)
 {
-  _lastWord = "    ";
+  _lastWord = INITIAL_VALUE;
 }
 
-void WordRepresenter::representWord(char *word)
+void WordRepresenter::representWord(String word)
 {
   int multiplexorData;
   for (int side = 0; side < NUMBER_OF_SIDES; side++)
@@ -33,7 +35,7 @@ void WordRepresenter::representWord(char *word)
       _multiplexorHandler.sendMultiplexorData(multiplexorData);
     }
   }
-  strcpy(_lastWord, word);
+  _lastWord = word;
 }
 
 const int multiplexorAdder[4][2] = {
@@ -48,9 +50,9 @@ int WordRepresenter::getSides(int initialSide, int sideToReach)
   return (NUMBER_OF_SIDES - initialSide + sideToReach) % NUMBER_OF_SIDES;
 }
 
-int WordRepresenter::getMultiplexorData(const char *word, int side)
+int WordRepresenter::getMultiplexorData(String word, int side)
 {
-  int wordLength = strlen(word);
+  int wordLength = word.length();
   int multiplexorData = 0;
   for (int i = 0; i < wordLength; i++)
   {

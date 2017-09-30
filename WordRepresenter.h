@@ -14,16 +14,16 @@ class WordRepresenter
 {
 public:
   WordRepresenter(MultiplexorHandler &multiplexorHandler);
-  void representWord(char *word);
+  void representWord(String word);
 
 private:
-  int getMultiplexorData(const char *word, int side);
+  int getMultiplexorData(String word, int side);
   int getNumberOfSidesPerMotor(char letter, int motorNumber);
   int getSides(int initialSide, int sideToReach);
 
   MultiplexorHandler _multiplexorHandler;
   int _delayBetweenSteps;
-  const char *_lastWord;
+  String _lastWord;
 };
 
 #endif

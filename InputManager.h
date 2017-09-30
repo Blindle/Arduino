@@ -12,12 +12,14 @@
 class InputManager
 {
 public:
+  static const int SERIAL_PORT_LISTENER;
+  static const int MANUAL_MODE;
   InputManager(int mode);
-  char *getInput();
+  String getInput();
 
 private:
-  char *listenSerialPort();
-  char *getHardcodedWord();
+  String listenSerialPort();
+  String getHardcodedWord();
   int _mode;
   int _hardcodedWordIndex;
 };

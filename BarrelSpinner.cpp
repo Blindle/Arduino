@@ -1,11 +1,11 @@
 /*
-  BarrelArranger.h - Library for manualy moving an specific to the right or to the left
+  BarrelSpinner.h - Library for manualy moving an specific to the right or to the left
   Created by Blindle, 22 Sept, 2017.
   Released into the public domain.
 */
 
 #include "Arduino.h"
-#include "BarrelArranger.h"
+#include "BarrelSpinner.h"
 #include "MultiplexorHandler.h"
 
 #define PARSE_TO_INT(character) ((int)character - 48)
@@ -32,16 +32,16 @@ const int MULTIPLEXOR_DATA_BY_MOTOR_NUMBER[8] = {
     0b00000001,
 };
 
-BarrelArranger::BarrelArranger(MultiplexorHandler &multiplexorHandler, int directionPin) : _multiplexorHandler(multiplexorHandler)
+BarrelSpinner::BarrelSpinner(MultiplexorHandler &multiplexorHandler, int directionPin) : _multiplexorHandler(multiplexorHandler)
 {
-    pinMode(directionPin, OUTPUT);
-    digitalWrite(directionPin, DEFAULT_DIRECTION);
-
     _directionPin = directionPin;
     _lastDirection = DEFAULT_DIRECTION;
+    
+    pinMode(_directionPin, OUTPUT);
+    digitalWrite(_directionPin, DEFAULT_DIRECTION);
 }
 
-bool BarrelArranger::hasToMoveBarrel(char *word)
+bool BarrelSpinner::hasToMoveBarrel(String word)
 {
     return word[0] == MOVE_BARREL_CHARACTER;
 }
@@ -51,42 +51,33 @@ bool BarrelArranger::hasToMoveBarrel(char *word)
     * D/I: is the direction that we want to spin, D is right and I is left.
     * [0, 1, 2, ..., 7]: is the motor number, this goes from 0 to 8.
 */
-void BarrelArranger::moveBarrel(char *word)
+void BarrelSpinner::moveBarrel(String word)
 {
     int direction = getDirection(word[1]);
     int motorNumber = PARSE_TO_INT(word[2]);
 
     moveMotor(motorNumber, direction);
-    restoreDirection(direction);
+    setDirection(DEFAULT_DIRECTION);
 }
 
-int BarrelArranger::getDirection(char directionCharacter) {
-    switch(directionCharacter) {
-        case LEFT_CHARACTER:
-            return LEFT_DIRECTION;
-        case RIGHT_DIRECTION:
-        default:
-            return RIGHT_DIRECTION;
-    }
+int BarrelSpinner::getDirection(char directionCharacter) {
+    return directionCharacter == LEFT_CHARACTER ? LEFT_DIRECTION : RIGHT_DIRECTION;
 }
 
-void BarrelArranger::restoreDirection(int direction) {
-    if (direction != DEFAULT_DIRECTION)
-    {
-        digitalWrite(_directionPin, DEFAULT_DIRECTION);
-    }
-}
-
-void BarrelArranger::moveMotor(int motorNumber, int direction)
+void BarrelSpinner::moveMotor(int motorNumber, int direction)
 {
-    if (_lastDirection != direction)
-    {
-        digitalWrite(_directionPin, direction);
-        _lastDirection = direction;
-    }
+    setDirection(direction);
 
     for (int side = 0; side < STEPS_PER_MOVE; side++)
     {
         _multiplexorHandler.sendMultiplexorData(MULTIPLEXOR_DATA_BY_MOTOR_NUMBER[motorNumber]);
+    }
+}
+
+void BarrelSpinner::setDirection(int direction) {
+    if (_lastDirection != direction)
+    {
+        digitalWrite(_directionPin, direction);
+        _lastDirection = direction;
     }
 }

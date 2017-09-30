@@ -8,11 +8,16 @@
 #include "InputManager.h"
 
 // MODES
-const int SERIAL_PORT = 1;
-const int MANUAL_MODE = 2;
+const int InputManager::SERIAL_PORT_LISTENER = 1;
+const int InputManager::MANUAL_MODE = 2;
+
+// CONSTANTS STRINGS
+const String INITIAL_VALUE = "     ";
+const String HARDCODES_WORDS[3] = {"AAAA", "BBBB", "CCCC"};
 
 // DELAYS
-int DELAY_BETWEEN_WORDS = 2000;
+const int DELAY_BETWEEN_WORDS = 2000;
+const int POOLING_SERIAL_DELAY = 10;
 
 InputManager::InputManager(int mode)
 {
@@ -20,11 +25,11 @@ InputManager::InputManager(int mode)
     _hardcodedWordIndex = 0;
 }
 
-char *InputManager::getInput()
+String InputManager::getInput()
 {
     switch (_mode)
     {
-    case SERIAL_PORT:
+    case SERIAL_PORT_LISTENER:
         return listenSerialPort();
     case MANUAL_MODE:
     default:
@@ -32,19 +37,21 @@ char *InputManager::getInput()
     }
 }
 
-char *InputManager::listenSerialPort()
+String InputManager::listenSerialPort()
 {
-    char result[5];
-    if (Serial.available())
-    {
-        Serial.readString().toCharArray(result, 5);
+    String result = INITIAL_VALUE;
+    while(result == INITIAL_VALUE) {
+        if (Serial.available())
+        {
+            result = Serial.readString();
+        }
+        delay(POOLING_SERIAL_DELAY);
     }
     return result;
 }
 
-char *InputManager::getHardcodedWord()
+String InputManager::getHardcodedWord()
 {
-    char *words[3] = {"AAAA", "BBBB", "CCCC"};
     delay(DELAY_BETWEEN_WORDS);
-    return words[_hardcodedWordIndex++ % 3];
+    return HARDCODES_WORDS[_hardcodedWordIndex++ % 3];
 }
