@@ -14,11 +14,10 @@ const char MOVE_BARREL_CHARACTER = '¬';
 const int STEPS_PER_MOVE = 100;
 
 const char LEFT_CHARACTER = 'L';
-const char RIGHT_CHARACTER = 'F';
+const char RIGHT_CHARACTER = 'R';
 
 const int LEFT_DIRECTION = LOW;
 const int RIGHT_DIRECTION = HIGH;
-
 const int DEFAULT_DIRECTION = RIGHT_DIRECTION;
 
 const int MULTIPLEXOR_DATA_BY_MOTOR_NUMBER[8] = {
