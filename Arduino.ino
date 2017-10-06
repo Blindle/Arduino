@@ -29,4 +29,5 @@ void loop()
   }
 
   wordRepresenter.representWord(word);
+  Serial.print("ARDUINO-LISTENING");
 }
