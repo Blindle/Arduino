@@ -22,6 +22,7 @@ void setup()
 void loop()
 {
   String word = inputManager.getInput();
+  Serial.println(word);
 
   if (BarrelSpinner::hasToMoveBarrel(word))
   {
@@ -29,5 +30,5 @@ void loop()
   }
 
   wordRepresenter.representWord(word);
-  Serial.print("ARDUINO-LISTENING");
+  Serial.println("ARDUINO-LISTENING");
 }
