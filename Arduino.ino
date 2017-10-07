@@ -9,6 +9,9 @@ int CLOCK_PIN = 10;     // Pin connected to SH_CP of 74HC595
 int LATCH_PIN = 9;      // Pin connected to ST_CP of 74HC595
 int DATA_PIN = 8;       // Pin connected to DS of 74HC595
 
+const String END_OF_LINE = "z";
+const String ARDUINO_LISTENING = "ARDUINO-LISTENING";
+
 MultiplexorHandler multiplexorHandler(LATCH_PIN, CLOCK_PIN, DATA_PIN);
 WordRepresenter wordRepresenter(multiplexorHandler);
 BarrelSpinner barrelSpinner(multiplexorHandler, DIRECTION_PIN);
@@ -22,13 +25,18 @@ void setup()
 void loop()
 {
   String word = inputManager.getInput();
-  Serial.println(word);
+  sendMessageToSerial(word);
 
   if (BarrelSpinner::hasToMoveBarrel(word))
   {
-    return barrelSpinner.moveBarrel(word);
+    barrelSpinner.moveBarrel(word);
+  } else {
+    wordRepresenter.representWord(word);
   }
 
-  wordRepresenter.representWord(word);
-  Serial.println("ARDUINO-LISTENING");
+  sendMessageToSerial(ARDUINO_LISTENING);
+}
+
+void sendMessageToSerial(String word) {
+  Serial.print(word + END_OF_LINE);
 }

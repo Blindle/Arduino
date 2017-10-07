@@ -10,7 +10,7 @@
 
 #define PARSE_TO_INT(character) ((int)character - 48)
 
-const char MOVE_BARREL_CHARACTER = '¬';
+const char MOVE_BARREL_CHARACTER = 'd';
 const int STEPS_PER_MOVE = 100;
 
 const char LEFT_CHARACTER = 'L';
@@ -45,8 +45,8 @@ bool BarrelSpinner::hasToMoveBarrel(String word)
     return word[0] == MOVE_BARREL_CHARACTER;
 }
 
-/* expected shape of word when moving a barrel --> -L1:
-    * -: is the character that Raspberry send us in order to move a barrel.
+/* expected shape of word when moving a barrel --> dL1:
+    * d: is the character that Raspberry send us in order to move a barrel.
     * L/R: is the direction that we want to spin.
     * [0, 1, 2, ..., 7]: is the motor number, this goes from 0 to 8.
 */
